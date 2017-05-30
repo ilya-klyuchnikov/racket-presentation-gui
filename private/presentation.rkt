@@ -6,7 +6,7 @@
 
 (provide presentation<%> presenter<%>
          presentation-type?
-         make-presentation-type define-presentation-type
+         make-presentation-type
          presentation-type/c
          presentation-has-type?
          presentation-presentation-type presentation-value
@@ -22,50 +22,11 @@
 
 ;;; A presentation type is an opaque object whose equality is eq?. But
 ;;; the name is saved for debugging purposes.
-(struct presentation-type (name per make-set)
-  #:methods gen:custom-write
-  [(define (write-proc x port mode)
-     (fprintf port "#<presentation-type:~s>" (presentation-type-name x)))])
+(struct presentation-type (name per make-set))
 
-(define/contract (make-presentation-type name #:equiv? [per #f] #:empty-set [make-set #f])
-  (->* (symbol?)
-       (#:equiv? (or/c #f (-> any/c any/c any/c))
-        #:empty-set (or/c #f (-> generic-set?)))
-       presentation-type?)
-  (presentation-type name
-                     (or per eq?)
-                     (if per
-                         (or make-set
-                             (slow-set per null))
-                         seteq)))
-
-(begin-for-syntax
-  (define-splicing-syntax-class presentation-type-option
-    (pattern (~seq #:equiv? per:expr))
-    (pattern (~seq #:empty-set make-set:expr))))
-
-(define-syntax (define-presentation-type stx)
-  (syntax-parse stx
-    [(_ name:id
-        (~or (~optional (~seq #:equiv? per:expr)
-                        #:defaults ([per #'#f]))
-             (~optional (~seq #:empty-set make-set:expr)
-                        #:defaults ([make-set #'#f])))
-        ...)
-     #'(define name
-         (make-presentation-type 'name
-                                 #:equiv? per
-                                 #:empty-set make-set))]
-    [(_ (name:id arg ...)
-        (~or (~optional (~seq #:equiv? per:expr)
-                        #:defaults ([per #'#f]))
-             (~optional (~seq #:empty-set make-set:expr)
-                        #:defaults ([make-set #'#f])))
-        ...)
-     #'(define (name arg ...)
-         (make-presentation-type 'name
-                                 #:equiv? per
-                                 #:empty-set make-set))]))
+(define
+  (make-presentation-type name)
+  (presentation-type name eq? seteq))
 
 (define (presented-object-equal? type v1 v2)
   (define per (presentation-type-per type))
@@ -82,34 +43,6 @@
   (make-flat-contract
    #:name `(presentation-type/c ,pres-type)
    #:first-order (lambda (x) (value-acceptable? x pres-type))))
-
-;;; To define a presentation type, one must provide a PER over values
-;;; and a set datastructure that uses the PER. If no set datastructure
-;;; is provided, this slow list-based fallback is used.
-(struct slow-set (same? elems)
-  #:methods gen:set
-  [(define (set-member? st v)
-     (member v (slow-set-elems st) (slow-set-same? st)))
-   (define (set-add st v)
-     (unless ((slow-set-same? st) v v)
-       (raise-argument-error 'set-add "value that is self-equal" v))
-     (if (member v (slow-set-elems st) (slow-set-same? st))
-         st
-         (slow-set (slow-set-same? st) (cons v (slow-set-elems st)))))
-   (define (set-remove st v)
-     (define same? (slow-set-same? st))
-     (slow-set (remove v (slow-set-elems st) same?) same?))
-   (define (set-first st)
-     (define elems (slow-set-elems st))
-     (if (null? elems)
-         (raise-argument-error 'set-first "non-empty set" st)
-         (car elems)))
-   (define (set-empty? st)
-     (null? (slow-set-elems st)))
-   (define (set-copy-clear st)
-     (slow-set (slow-set-same? st) null))
-   (define (set->list st)
-     (slow-set-elems st))])
 
 ;;; prop:presentation should be set to a two-element list in which the
 ;;; first element is the projection to get the presented object and
