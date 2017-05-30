@@ -54,6 +54,7 @@ script:
  - raco pkg install --deps search-auto cover
  - raco pkg install -n presentations
  - raco test -x -p presentations
+ - racket main.rkt
 
 after_success:
  - raco setup --check-deps presentations
