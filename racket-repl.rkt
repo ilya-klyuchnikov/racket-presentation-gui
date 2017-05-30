@@ -5,8 +5,6 @@
          "private/presentation/repl.rkt"
          "private/presentation/text.rkt")
 
-
-
 (define (intersperse sep lst)
   (cond
     [(null? lst) null]
@@ -14,29 +12,7 @@
      lst]
     [else (cons (car lst) (cons sep (intersperse sep (cdr lst))))]))
 
-(define srcloc/p (make-presentation-type 'srcloc/p))
-(define exn/p (make-presentation-type 'exn/p))
-
-(define (present-exn exn)
-  (let ([msg (exn-message exn)]
-        [trace (continuation-mark-set->context (exn-continuation-marks exn))])
-    (pstring-annotate
-     exn exn/p
-     (apply pstring-append (pstring msg)
-            (pstring "\n")
-            (for/list ([frame trace])
-              (apply pstring-append
-                     (append (if (car frame)
-                                 (list (pstring (symbol->string (car frame))))
-                                 null)
-                             (if (and (car frame) (cdr frame))
-                                 (list (pstring ": "))
-                                 null)
-                             (if (cdr frame)
-                                 (list (pstring-annotate (cdr frame) srcloc/p
-                                                         (pstring (srcloc->string (cdr frame)))))
-                                 null)
-                             (list (pstring "\n")))))))))
+(define (present-exn exn) "Error")
 
 (define (pretty-present object)
   (define width-preference 80)
@@ -80,9 +56,6 @@
   (real-pretty-present object 0))
 
 (module+ main
-  (require macro-debugger/syntax-browser)
-  (require macro-debugger/stepper)
-  (define show-graphical? #f)
 
   (define (rep str)
     (with-handlers ([exn? present-exn])
@@ -93,12 +66,6 @@
       (pretty-present result)))
 
   (define frame (new frame% [label "REPL"] [width 800] [height 600]))
-  (define stacking (new vertical-panel% [parent frame]))
-  (define option (new check-box%
-                      [parent stacking]
-                      [label "Output graphics"]
-                      [callback (lambda (c ev)
-                                  (set! show-graphical? (send c get-value)))]))
   (define repl (new presentation-repl%
                     [highlight-callback
                      (lambda (dc x1 y1 x2 y2)
@@ -110,9 +77,8 @@
                          (draw-rectangle x1 y1 x2 y2)
                          (set-brush old-brush)
                          (set-pen old-pen)))]
-                    [eval-callback rep]
-                    ))
+                    [eval-callback rep]))
   (define editor-canvas (new editor-canvas%
-                             [parent stacking]
+                             [parent frame]
                              [editor repl]))
   (send frame show #t))

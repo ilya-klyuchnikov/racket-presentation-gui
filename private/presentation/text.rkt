@@ -286,38 +286,3 @@
                            (lambda args (queue-callback (cadr cmd)))]))
                    (send (send this get-admin)
                          popup-menu menu (send ev get-x) (send ev get-y)))))]))))
-
-
-(module+ main
-  (require racket racket/gui)
-
-  (struct fnord (illuminatus) #:transparent)
-  (define fnord-1 (fnord "here"))
-  (define fnord-2 (fnord "and here"))
-
-  (define fnord/p (make-presentation-type 'fnord/p))
-  (define non-fnord/p (make-presentation-type 'non-fnord/p))
-
-  (define text
-    (pstring-append (pstring "It seems that there are ")
-                    (pstring-annotate fnord-1 fnord/p (pstring "things we don't know"))
-                    (pstring " about ")
-                    (pstring-annotate fnord-2 non-fnord/p (pstring "our"))
-                    (pstring " ")
-                    (pstring-annotate fnord-2 fnord/p (pstring "linguistic environment"))
-                    (pstring " and why ")
-                    (pstring-annotate fnord-1 fnord/p (pstring "it makes us anxious"))))
-
-  (define f (new frame% [label "Find them!"] [width 800] [height 500]))
-  (define b (new button%
-                 [label "Specificity, please"]
-                 [parent f]
-                 [callback (lambda (b e)
-                             (send (current-presentation-context) accept
-                                   fnord/p displayln))]))
-  (define t (new presentation-text% [auto-wrap #t]))
-  (define c (new editor-canvas% [parent f] [editor t]))
-
-  (send t insert-presenting text)
-
-  (send f show #t))

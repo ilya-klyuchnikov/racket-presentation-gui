@@ -11,7 +11,6 @@
          presentation-has-type?
          presentation-presentation-type presentation-value
          prop:presentation presentation?
-         (struct-out simple-presentation)
          presented-object-equal?
          presentation-context<%> presentation-context%
          (contract-out [current-presentation-context
@@ -112,12 +111,6 @@
    (define (set->list st)
      (slow-set-elems st))])
 
-(module+ test
-  (define none (slow-set (lambda (x y) (= (string-length x) (string-length y))) null))
-  (define one (set-add none "oh"))
-  (define two (set-add one "no"))
-  (check-equal? (set->list two) '("oh")))
-
 ;;; prop:presentation should be set to a two-element list in which the
 ;;; first element is the projection to get the presented object and
 ;;; the second is the projection to get the presentation type.
@@ -141,12 +134,6 @@
 (define/contract (presentation-presentation-type pres)
   (-> presentation? presentation-type?)
   ((cadr (presentation-accessor pres)) pres))
-
-(struct simple-presentation (value type)
-  #:property prop:presentation
-  (list (lambda (x) (simple-presentation-value x))
-        (lambda (x) (simple-presentation-type x))))
-
 
 (define presentation<%>
   (interface*
