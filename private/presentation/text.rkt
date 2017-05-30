@@ -99,18 +99,9 @@
 
     ;; TODO: less-dumb data structure
     ;; For now, a list of lists containing offset, length, object, presentation-type
-    (define presented-objects '())
-
-    (define/augment (can-insert? start len)
-      (and (not (send presentation-context currently-accepting))
-           (inner #t can-insert? start len)))
-
-    (define/augment (can-delete? start len)
-      (and (not (send presentation-context currently-accepting))
-           (inner #t can-delete? start len)))
+    (define presented-objects '())    
 
     ;; Maintain the presented-objects map
-
     (define/public (insert-presenting pstring [start #f])
       (unless start
         (set! start (let ([b (box 0)])

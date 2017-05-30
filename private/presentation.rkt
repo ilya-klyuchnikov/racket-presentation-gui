@@ -4,7 +4,7 @@
 (require racket/class racket/contract racket/match racket/set)
 (require (for-syntax racket/base syntax/parse))
 
-(provide presentation<%> presenter<%>
+(provide presenter<%>
          presentation-type?
          make-presentation-type
          presentation-type/c
@@ -66,17 +66,6 @@
   (-> presentation? presentation-type?)
   ((cadr (presentation-accessor pres)) pres))
 
-(define presentation<%>
-  (interface*
-   ()
-   ([prop:presentation (list (lambda (x) (send x get-presented-value))
-                             (lambda (x) (send x get-presentation-type)))])
-   [get-presentation-type
-    (->m presentation-type?)]
-   [get-presented-value
-    (->i ([me any/c])
-         (result (me) (presentation-type/c (send me get-presentation-type))))]))
-
 (define presenter<%>
   (interface ()
     ;; Equivalent presentations should be shown in a highlighted state.
@@ -123,10 +112,6 @@
       (if (pair? accepting-stack)
           (caar accepting-stack)
           #f))
-
-    (define (propagate-state new-state)
-      (for ([p (in-set presenters)])
-        (send p accepting (currently-accepting))))
 
     (define/public (accept type callback)
       (set! accepting-stack (cons (cons type callback) accepting-stack)))
