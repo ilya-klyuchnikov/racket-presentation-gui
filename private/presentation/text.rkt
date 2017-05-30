@@ -113,54 +113,6 @@
       (void))
 
     ;; Maintain the presented-objects map
-    (define/augment (on-delete start len)
-      (define end (+ start len))
-      (set! presented-objects
-            (for/list ([presented presented-objects])
-              (match-define (textual-presentation obj-start obj-len object presentation-type) presented)
-              (define obj-end (+ obj-start obj-len))
-              (cond
-                [(< start obj-start)
-                 (if (<= end obj-start)
-                     (textual-presentation (- obj-start len)
-                                           obj-len
-                                           object
-                                           presentation-type)
-                     (textual-presentation start
-                                           (- obj-len (- end obj-start))
-                                           object
-                                           presentation-type))]
-                [(= start obj-start)
-                 (textual-presentation start
-                                       (max (- obj-len len) 0)
-                                       object
-                                       presentation-type)]
-                [(> start obj-start)
-                 (cond [(>= start obj-end) ;; after end, no worries
-                        presented]
-                       [(< end obj-end) ;; we removed from the middle
-                        (textual-presentation obj-start
-                                              (- obj-len len)
-                                              object
-                                              presentation-type)]
-                       [else ;; overlap with end
-                        (list obj-start
-                              (- start obj-start)
-                              object
-                              presentation-type)])]))))
-    (define/augment (on-insert start len)
-      (define end (+ start len))
-      (set! presented-objects
-            (for/list ([presented presented-objects])
-              (match-define (textual-presentation obj-start obj-len object presentation-type)
-                presented)
-              (define obj-end (+ obj-start obj-len))
-              (cond [(<= start obj-start)
-                     (textual-presentation (+ obj-start len) obj-len object presentation-type)]
-                    [(>= start obj-end)
-                     presented]
-                    [else
-                     (textual-presentation obj-start (+ obj-len len) object presentation-type)]))))
 
     (define/public (insert-presenting pstring [start #f])
       (unless start
