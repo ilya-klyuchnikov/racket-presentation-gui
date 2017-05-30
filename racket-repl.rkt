@@ -4,8 +4,7 @@
 (require pict)
 (require "private/presentation.rkt"
          "private/presentation/repl.rkt"
-         "private/presentation/text.rkt"
-         "private/presentation/presentation-pict-snip.rkt")
+         "private/presentation/text.rkt")
 
 (require "inspector.rkt")
 
