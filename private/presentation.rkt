@@ -166,8 +166,4 @@
 (define current-presentation-context
   (make-parameter (new presentation-context%)))
 
-(define (accept presentation-type callback
-                #:presentation-context [context (current-presentation-context)])
-  (send context accept presentation-type callback))
-
 (define value/p (make-presentation-type 'value/p))
