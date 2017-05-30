@@ -15,7 +15,8 @@
          presented-object-equal?
          presentation-context<%> presentation-context%
          (contract-out [current-presentation-context
-                        (parameter/c (is-a?/c presentation-context<%>))]))
+                        (parameter/c (is-a?/c presentation-context<%>))])
+         value/p)
 
 (module+ test
   (require rackunit))
@@ -298,3 +299,5 @@
 (define (accept presentation-type callback
                 #:presentation-context [context (current-presentation-context)])
   (send context accept presentation-type callback))
+
+(define value/p (make-presentation-type 'value/p))

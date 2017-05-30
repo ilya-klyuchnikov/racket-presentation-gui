@@ -1,12 +1,9 @@
 #lang racket
 
-(require racket/gui framework)
-(require pict)
+(require racket/gui)
 (require "private/presentation.rkt"
          "private/presentation/repl.rkt"
          "private/presentation/text.rkt")
-
-(require "inspector.rkt")
 
 
 
@@ -87,38 +84,6 @@
   (require macro-debugger/stepper)
   (define show-graphical? #f)
 
-  (send (current-presentation-context) register-command-translator
-        value/p
-        (lambda (val)
-          (list (list "Inspect value" (thunk (gui-inspect val))))))
-
-  (send (current-presentation-context) register-command-translator
-        value/p
-        (lambda (val)
-          (if (syntax? val)
-              (list
-               (list "Macro Stepper" (thunk (expand/step val)))
-               (list "Browse Syntax" (thunk (browse-syntax val))))
-              (list))))
-
-  (send (current-presentation-context) register-command-translator
-        value/p
-        (lambda (val)
-          (if (box? val)
-              (list (list "Modify box contents"
-                          (thunk (define str
-                                   (get-text-from-user
-                                    "New value"
-                                    "Please provide a new value"))
-                                 (define result
-                                   (with-handlers ([exn:fail? exn-message])
-                                     (eval (with-input-from-string str (thunk (read)))
-                                           (current-namespace))))
-                                 (set-box! val result)
-                                 (send (current-presentation-context) mutation))))
-              (list))))
-
-
   (define (rep str)
     (with-handlers ([exn? present-exn])
       (define result
@@ -145,7 +110,8 @@
                          (draw-rectangle x1 y1 x2 y2)
                          (set-brush old-brush)
                          (set-pen old-pen)))]
-                    [eval-callback rep]))
+                    [eval-callback rep]
+                    ))
   (define editor-canvas (new editor-canvas%
                              [parent stacking]
                              [editor repl]))
