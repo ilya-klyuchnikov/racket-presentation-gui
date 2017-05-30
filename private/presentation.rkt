@@ -22,26 +22,24 @@
 
 ;;; A presentation type is an opaque object whose equality is eq?. But
 ;;; the name is saved for debugging purposes.
-(struct presentation-type (name per make-set))
+(struct presentation-type (name))
 
 (define
   (make-presentation-type name)
-  (presentation-type name eq? seteq))
+  (presentation-type name))
 
 (define (presented-object-equal? type v1 v2)
-  (define per (presentation-type-per type))
-  (per v1 v2))
+  (eq? v1 v2))
 
 (define (value-acceptable? v pres)
-  (define per (presentation-type-per pres))
-  (per v v))
+  (eq? v v))
 
 (define (presentation-has-type? presentation type)
   (eq? (presentation-presentation-type presentation) type))
 
 (define (presentation-type/c pres-type)
   (make-flat-contract
-   #:name `(presentation-type/c ,pres-type)
+   #:name `(presentation-type/c , pres-type)
    #:first-order (lambda (x) (value-acceptable? x pres-type))))
 
 ;;; prop:presentation should be set to a two-element list in which the
