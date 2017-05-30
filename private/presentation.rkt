@@ -86,9 +86,7 @@
                     ()
                     [result void?])]
     ;; No more highlighting.
-    [no-highlighting (->m void?)]
-    ;; A mutation in presented data has occurred
-    [mutation (->m void?)]))
+    [no-highlighting (->m void?)]))
 
 (define presentation-context<%>
   (interface ()
@@ -108,8 +106,7 @@
                    ()
                    [result any/c])]
     [make-active (->m presentation? void?)]
-    [nothing-active (->m void?)]        
-    [mutation (->m void?)]))
+    [nothing-active (->m void?)]))
 
 ;;; A presentation context manages the global application presentation
 ;;; state, including:
@@ -155,11 +152,7 @@
 
     (define/public (nothing-active)
       (for ([p (in-set presenters)])
-        (send p no-highlighting)))
-
-    (define/public (mutation)
-      (for ([presenter (in-set presenters)])
-        (send presenter mutation)))))
+        (send p no-highlighting)))))
 
 (define current-presentation-context
   (make-parameter (new presentation-context%)))

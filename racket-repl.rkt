@@ -62,7 +62,6 @@
       (define result
         (eval (with-input-from-string str (thunk (read)))
               (current-namespace)))
-      (send (current-presentation-context) mutation)
       (pretty-present result)))
 
   (define frame (new frame% [label "REPL"] [width 800] [height 600]))
