@@ -271,18 +271,4 @@
             [(and (send presentation-context currently-accepting) (send ev button-down?))
              (let ([pres (presentation-at x y)])
                (when (presentation? pres)
-                 (send presentation-context accepted pres)))]
-            [(send ev button-down? 'right)
-             (let ([pres (presentation-at x y)]
-                   [menu (new popup-menu%)])
-               (when (presentation? pres)
-                 (define cmds (send presentation-context commands-for pres))
-                 (when (not (null? cmds))
-                   (for ([cmd cmds])
-                     (new menu-item%
-                          [label (car cmd)]
-                          [parent menu]
-                          [callback
-                           (lambda args (queue-callback (cadr cmd)))]))
-                   (send (send this get-admin)
-                         popup-menu menu (send ev get-x) (send ev get-y)))))]))))
+                 (send presentation-context accepted pres)))]))))

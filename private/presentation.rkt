@@ -177,34 +177,7 @@
                    ()
                    [result any/c])]
     [make-active (->m presentation? void?)]
-    [nothing-active (->m void?)]
-    [register-command-translator
-     (->i ([me any/c]
-           [type presentation-type?]
-           [proc (type) (-> (presentation-type/c type)
-                            (listof (list/c string?
-                                            (-> void?))))])
-          ()
-          [result void?])]
-    [register-default-command
-     (->i ([me any/c]
-           [type presentation-type?]
-           [proc (type) (-> (presentation-type/c type)
-                            void?)])
-          ()
-          [result void?])]
-    [commands-for
-     (->m presentation?
-          (listof (list/c string?
-                          (-> void?))))]
-
-    [default-command-for
-      (->i ([me any/c]
-            [pres presentation?])
-           ()
-           [result (pres) (-> (presentation-type/c
-                               (presentation-presentation-type pres))
-                              void?)])]
+    [nothing-active (->m void?)]        
     [mutation (->m void?)]))
 
 ;;; A presentation context manages the global application presentation
@@ -252,29 +225,6 @@
     (define/public (nothing-active)
       (for ([p (in-set presenters)])
         (send p no-highlighting)))
-
-    (define command-translators (make-weak-hasheq))
-    (define/public (register-command-translator type proc)
-      (hash-update! command-translators
-                    type
-                    (lambda (old) (cons proc old))
-                    null))
-
-    (define default-commands (make-weak-hasheq))
-    (define/public (register-default-command type proc)
-      (hash-set! default-commands type proc))
-
-    (define/public (commands-for pres)
-      (for*/list ([tr (hash-ref command-translators
-                                (presentation-presentation-type pres)
-                                null)]
-                  [cmd (tr (presentation-value pres))])
-        cmd))
-
-    (define/public (default-command-for pres)
-      (hash-ref default-commands
-                (presentation-presentation-type pres)
-                (lambda () (lambda (obj) (void)))))
 
     (define/public (mutation)
       (for ([presenter (in-set presenters)])
