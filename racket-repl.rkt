@@ -126,11 +126,7 @@
         (eval (with-input-from-string str (thunk (read)))
               (current-namespace)))
       (send (current-presentation-context) mutation)
-      (if show-graphical?
-          (let ([snip (new presentation-pict-snip%)])
-            (send snip add-pict (present-to-pict snip result) 1 1)
-            snip)
-          (pretty-present result))))
+      (pretty-present result)))
 
   (define frame (new frame% [label "REPL"] [width 800] [height 600]))
   (define stacking (new vertical-panel% [parent frame]))
