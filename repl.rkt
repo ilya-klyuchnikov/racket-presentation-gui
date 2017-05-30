@@ -1,7 +1,7 @@
 #lang racket
 
 (require racket/gui)
-(require "../presentation.rkt"
+(require "presentation.rkt"
          "text.rkt")
 
 (provide presentation-repl%)

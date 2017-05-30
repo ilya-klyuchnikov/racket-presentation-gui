@@ -2,7 +2,7 @@
 
 (require racket/class racket/contract racket/match racket/set)
 (require racket/gui/base)
-(require "../presentation.rkt")
+(require "presentation.rkt")
 
 (provide presentation-string<%>
          (contract-out
@@ -99,7 +99,7 @@
 
     ;; TODO: less-dumb data structure
     ;; For now, a list of lists containing offset, length, object, presentation-type
-    (define presented-objects '())    
+    (define presented-objects '())
 
     ;; Maintain the presented-objects map
     (define/public (insert-presenting pstring [start #f])

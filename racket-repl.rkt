@@ -1,9 +1,9 @@
 #lang racket
 
 (require racket/gui)
-(require "private/presentation.rkt"
-         "private/presentation/repl.rkt"
-         "private/presentation/text.rkt")
+(require "presentation.rkt"
+         "repl.rkt"
+         "text.rkt")
 
 (define (intersperse sep lst)
   (cond
