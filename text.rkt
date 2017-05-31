@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require racket/class racket/contract racket/match racket/set)
+(require racket/class racket/match racket/set)
 (require racket/gui/base)
 (require "presentation.rkt")
 
@@ -18,9 +18,9 @@
 
 (define presentation-string<%>
   (interface ()
-    [get-string (->m string?)]
-    [get-length (->m exact-nonnegative-integer?)]
-    [get-presentations (->m (listof textual-presentation?))]))
+    get-string
+    get-length
+    get-presentations))
 
 (define presentation-string%
   (class* object%
