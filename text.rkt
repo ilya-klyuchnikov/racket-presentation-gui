@@ -42,9 +42,9 @@
              (for*/list ([str (in-sequences strings)])
                (define result
                  (for/list ([pres (send str get-presentations)])
-                   (match-define (textual-presentation offset len object presentation-type)
+                   (match-define (textual-presentation offset len object)
                      pres)
-                   (textual-presentation (+ offset length) len object presentation-type)))
+                   (textual-presentation (+ offset length) len object)))
                (set! length (+ length (string-length (send str get-string))))
                result)))))
 
@@ -52,21 +52,21 @@
   (class* object%
     (presentation-string<%>)
     (super-new)
-    (init-field string object presentation-type)
+    (init-field string object)
     (define len (send string get-length))
     (define/public (get-string)
       (send string get-string))
     (define/public (get-length)
       len)
     (define/public (get-presentations)
-      (cons (textual-presentation 0 len object presentation-type) (send string get-presentations)))))
+      (cons (textual-presentation 0 len object) (send string get-presentations)))))
 
 (define (pstring str)
   (new presentation-string% [string str]))
 (define (pstring-append . strs)
   (new presentation-string-append% [strings strs]))
-(define (pstring-annotate object presentation-type str)
-  (new presentation-of-string% [string str] [object object] [presentation-type presentation-type]))
+(define (pstring-annotate object str)
+  (new presentation-of-string% [string str] [object object]))
 
 
 (define presentation-text%
@@ -82,7 +82,7 @@
     (define active-presentations (seteq))
 
     ;; TODO: less-dumb data structure
-    ;; For now, a list of lists containing offset, length, object, presentation-type
+    ;; For now, a list of lists containing offset, length, object
     (define presented-objects '())
 
     ;; Maintain the presented-objects map
@@ -96,9 +96,9 @@
       (send this insert str start)
       (set! presented-objects
             (append (for/list ([p pres])
-                      (match-define (textual-presentation obj-start obj-len object presentation-type)
+                      (match-define (textual-presentation obj-start obj-len object)
                         p)
-                      (textual-presentation (+ obj-start start) obj-len object presentation-type))
+                      (textual-presentation (+ obj-start start) obj-len object))
                     presented-objects)))
 
 
@@ -114,7 +114,7 @@
       (super on-paint before? dc left top right bottom dx dy draw-caret)
       (unless before?
         (for ([p active-presentations])
-          (match-define (textual-presentation start len object presentation-type) p)
+          (match-define (textual-presentation start len object) p)
           (define relevant-lines
             (in-range (send this position-line start)
                       (add1 (send this position-line (+ start len)))))
@@ -135,7 +135,7 @@
                (+ (unbox x-begin) dx) (+ (unbox y-begin) dy)
                (- (unbox x-end) (unbox x-begin)) (- (unbox y-end) (unbox y-begin))))))))
 
-    (define/public (highlight type value)
+    (define/public (highlight value)
       (set! active-presentations
             (for/seteq ([p presented-objects]
                         #:when (eq? (textual-presentation-value p) value))

@@ -31,21 +31,21 @@
   (define (pretty-present-obj obj start-col)
     (match obj
       [(? null?)
-       (pstring-annotate obj value/p (pstring "'()"))]
+       (pstring-annotate obj (pstring "'()"))]
       [(list xs ...)
        (let ([contents (pretty-present-seq xs (+ start-col 2))]
              [start (pstring "'(")]
              [end (pstring ")")])
-         (pstring-annotate obj value/p (pstring-append start contents end)))]
+         (pstring-annotate obj (pstring-append start contents end)))]
       [other
-       (pstring-annotate obj value/p (pstring (format "~v" other)))]))
+       (pstring-annotate obj (pstring (format "~v" other)))]))
   (pretty-present-obj object 0))
 
 (module+ main
 
   (define (rep str)
-    (with-handlers ([exn? present-exn])
-      (pretty-present (read (open-input-string str)))))
+    ;(with-handlers ([exn? present-exn])
+      (pretty-present (read (open-input-string str))));)
 
   (define frame
     (new frame% [label "REPL"] [width 800] [height 600]))

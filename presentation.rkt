@@ -5,14 +5,9 @@
 
 (provide presenter<%>
          current-presentation-context
-         value/p
          (struct-out textual-presentation))
 
-;;; A presentation type is an opaque object whose equality is eq?. But
-;;; the name is saved for debugging purposes.
-(struct presentation-type (name))
-
-(struct textual-presentation (offset len value type))
+(struct textual-presentation (offset len value))
 
 (define presenter<%>
   (interface ()
@@ -65,9 +60,7 @@
     ;; presentations as active
     (define/public (make-active p)
       (for ([presenter (in-set presenters)])
-        (send presenter highlight
-              (textual-presentation-type p)
-              (textual-presentation-value p))))
+        (send presenter highlight (textual-presentation-value p))))
 
     (define/public (nothing-active)
       (for ([p (in-set presenters)])
@@ -75,5 +68,3 @@
 
 (define current-presentation-context
   (make-parameter (new presentation-context%)))
-
-(define value/p (presentation-type 'value/p))
