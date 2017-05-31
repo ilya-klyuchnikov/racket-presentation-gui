@@ -31,6 +31,10 @@
       (and (>= start input-beginning-position)
            (not locked?)))
 
+    (define/augment (can-delete? start len)
+      (and (>= start input-beginning-position)
+           (not locked?)))
+
     (define/override (on-char c)
       (if (and (eq? (send c get-key-code)
                     #\return)

@@ -59,9 +59,7 @@
 
   (define (rep str)
     (with-handlers ([exn? present-exn])
-      (define result
-        (read (open-input-string str)))              
-      (pretty-present result)))
+      (pretty-present (read (open-input-string str)))))
 
   (define frame (new frame% [label "REPL"] [width 800] [height 600]))
   (define repl (new presentation-repl%
