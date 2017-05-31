@@ -60,8 +60,7 @@
   (define (rep str)
     (with-handlers ([exn? present-exn])
       (define result
-        (eval (with-input-from-string str (thunk (read)))
-              (current-namespace)))
+        (read (open-input-string str)))              
       (pretty-present result)))
 
   (define frame (new frame% [label "REPL"] [width 800] [height 600]))
