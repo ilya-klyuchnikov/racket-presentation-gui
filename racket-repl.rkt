@@ -24,7 +24,7 @@
           (pstring (string-append "\n" (make-string start-col #\space)))
           (pstring " ")))
     (define contents (intersperse sep presented-xs))      
-    (apply pstring-append contents))
+    (new presentation-string-append% [strings contents]))
 
   (define (pretty-present-obj obj start-col)
     (match obj
@@ -34,7 +34,7 @@
        (let ([contents (pretty-present-seq xs (+ start-col 2))]
              [start (pstring "'(")]
              [end (pstring ")")])
-         (new presentation-of-string% [string (pstring-append start contents end)] [object obj]))]
+         (new presentation-of-string% [string (new presentation-string-append% [strings (list start contents end)])] [object obj]))]
       [other
          (new presentation-of-string% [string (pstring (format "~v" other))] [object obj])]))
   (pretty-present-obj object 0))

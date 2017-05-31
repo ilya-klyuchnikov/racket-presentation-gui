@@ -9,7 +9,6 @@
          presentation-string-append%
          presentation-of-string%
          pstring
-         pstring-append
          presentation-text%)
 
 (define presentation-string<%>
@@ -19,6 +18,7 @@
     get-presentations))
 
 ; single wrapped string
+; atomic string without value (separators, parenthesis, spaces)
 (define presentation-string%
   (class* object%
     (presentation-string<%>)
@@ -29,7 +29,7 @@
     (define/public (get-length) len)
     (define/public (get-presentations) '())))
 
-; combination of presentation-strings
+; a group of presentations
 (define presentation-string-append%
   (class* object%
     (presentation-string<%>)
@@ -41,6 +41,7 @@
     (define/public (get-length) len)
     (define/public (get-presentations)
       (define length 0)
+      ; the main bookkeeping is remappings of offsets here)
       (apply append
              (for*/list ([str strings])
                (define result
@@ -51,6 +52,7 @@
                (set! length (+ length (string-length (send str get-string))))
                result)))))
 
+; an object presentations
 (define presentation-of-string%
   (class* object%
     (presentation-string<%>)
@@ -66,8 +68,6 @@
 
 (define (pstring str)
   (new presentation-string% [string str]))
-(define (pstring-append . strs)
-  (new presentation-string-append% [strings strs]))
 
 (define presentation-text%
   (class* text%
