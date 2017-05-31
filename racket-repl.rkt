@@ -1,9 +1,7 @@
 #lang racket
 
 (require racket/gui/base)
-(require "presentation.rkt"
-         "repl.rkt"
-         "text.rkt")
+(require "repl.rkt" "text.rkt")
 
 (define (intersperse sep lst)
   (cond
@@ -31,14 +29,14 @@
   (define (pretty-present-obj obj start-col)
     (match obj
       [(? null?)
-       (pstring-annotate obj (pstring "'()"))]
+       (new presentation-of-string% [str (pstring "'()")] [object obj])]
       [(list xs ...)
        (let ([contents (pretty-present-seq xs (+ start-col 2))]
              [start (pstring "'(")]
              [end (pstring ")")])
-         (pstring-annotate obj (pstring-append start contents end)))]
+         (new presentation-of-string% [string (pstring-append start contents end)] [object obj]))]
       [other
-       (pstring-annotate obj (pstring (format "~v" other)))]))
+         (new presentation-of-string% [string (pstring (format "~v" other))] [object obj])]))
   (pretty-present-obj object 0))
 
 (module+ main

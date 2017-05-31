@@ -5,9 +5,11 @@
 (require "presentation.rkt")
 
 (provide presentation-string<%>
+         presentation-string%
+         presentation-string-append%
+         presentation-of-string%
          pstring
          pstring-append
-         pstring-annotate
          presentation-text%)
 
 (define presentation-string<%>
@@ -27,6 +29,7 @@
     (define/public (get-length) len)
     (define/public (get-presentations) '())))
 
+; combination of presentation-strings
 (define presentation-string-append%
   (class* object%
     (presentation-string<%>)
@@ -39,7 +42,7 @@
     (define/public (get-presentations)
       (define length 0)
       (apply append
-             (for*/list ([str (in-sequences strings)])
+             (for*/list ([str strings])
                (define result
                  (for/list ([pres (send str get-presentations)])
                    (match-define (textual-presentation offset len object)
@@ -65,9 +68,6 @@
   (new presentation-string% [string str]))
 (define (pstring-append . strs)
   (new presentation-string-append% [strings strs]))
-(define (pstring-annotate object str)
-  (new presentation-of-string% [string str] [object object]))
-
 
 (define presentation-text%
   (class* text%
