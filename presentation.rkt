@@ -29,17 +29,7 @@
 ;;; first element is the projection to get the presented object and
 ;;; the second is the projection to get the presentation type.
 (define-values (prop:presentation presentation? presentation-accessor)
-  (make-struct-type-property
-   'prop:presentation
-   (lambda (x info)
-     (if (and (list? x)
-              (= (length x) 2)
-              (procedure-arity-includes? (car x) 1)
-              (procedure-arity-includes? (cadr x) 1))
-         x
-         (raise-argument-error 'prop:presentation
-                               "A list of two accessors"
-                               x)))))
+  (make-struct-type-property 'prop:presentation))
 
 (define (presentation-value pres)
   ((car (presentation-accessor pres)) pres))

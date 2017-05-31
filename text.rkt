@@ -8,7 +8,6 @@
          pstring
          pstring-append
          pstring-annotate
-         presentation-text%         
          presentation-text%)
 
 (struct textual-presentation (offset len value type)
@@ -22,6 +21,7 @@
     get-length
     get-presentations))
 
+; single wrapped string
 (define presentation-string%
   (class* object%
     (presentation-string<%>)
@@ -37,13 +37,9 @@
     (presentation-string<%>)
     (init-field strings)
     (super-new)
-    (define len
-      (apply + (for/list ([str strings])
-                 (send str get-length))))
+    (define len (apply + (for/list ([str strings]) (send str get-length))))
     (define/public (get-string)
-      (apply string-append
-             (for/list ([str strings])
-               (send str get-string))))
+      (apply string-append (for/list ([str strings]) (send str get-string))))
     (define/public (get-length) len)
     (define/public (get-presentations)
       (define length 0)

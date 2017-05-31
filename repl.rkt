@@ -1,6 +1,6 @@
 #lang racket
 
-(require racket/gui)
+(require racket/gui/base)
 (require "presentation.rkt"
          "text.rkt")
 
