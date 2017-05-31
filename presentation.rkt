@@ -17,13 +17,11 @@
                         (parameter/c (is-a?/c presentation-context<%>))])
          value/p)
 
-(module+ test
-  (require rackunit))
-
 ;;; A presentation type is an opaque object whose equality is eq?. But
 ;;; the name is saved for debugging purposes.
 (struct presentation-type (name))
 
+; TODO - we can inline it?
 (define
   (make-presentation-type name)
   (presentation-type name))
@@ -58,12 +56,10 @@
                                "A list of two accessors"
                                x)))))
 
-(define/contract (presentation-value pres)
-  (-> presentation? any/c)
+(define (presentation-value pres)
   ((car (presentation-accessor pres)) pres))
 
-(define/contract (presentation-presentation-type pres)
-  (-> presentation? presentation-type?)
+(define (presentation-presentation-type pres)
   ((cadr (presentation-accessor pres)) pres))
 
 (define presenter<%>
