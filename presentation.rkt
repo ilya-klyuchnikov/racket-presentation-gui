@@ -17,6 +17,18 @@
 ;;; the name is saved for debugging purposes.
 (struct presentation-type (name))
 
+;;; prop:presentation should be set to a two-element list in which the
+;;; first element is the projection to get the presented object and
+;;; the second is the projection to get the presentation type.
+(define-values (prop:presentation presentation? presentation-accessor)
+  (make-struct-type-property 'prop:presentation))
+
+(struct textual-presentation (offset len value type)
+  #:property prop:presentation
+  (list (lambda (x) (textual-presentation-value x))
+        (lambda (x) (textual-presentation-type x))))
+
+
 (define (presented-object-equal? type v1 v2)
   (eq? v1 v2))
 
@@ -24,24 +36,13 @@
   (eq? v v))
 
 (define (presentation-has-type? presentation type)
-  (eq? (presentation-presentation-type presentation) type))
-
-;;; prop:presentation should be set to a two-element list in which the
-;;; first element is the projection to get the presented object and
-;;; the second is the projection to get the presentation type.
-(define-values (prop:presentation presentation? presentation-accessor)
-  (make-struct-type-property 'prop:presentation))
+  (eq? (textual-presentation-type presentation) type))
 
 (define (presentation-value pres)
-  ((car (presentation-accessor pres)) pres))
+  (textual-presentation-value pres))
 
 (define (presentation-presentation-type pres)
   ((cadr (presentation-accessor pres)) pres))
-
-(struct textual-presentation (offset len value type)
-  #:property prop:presentation
-  (list (lambda (x) (textual-presentation-value x))
-        (lambda (x) (textual-presentation-type x))))
 
 (define presenter<%>
   (interface ()
@@ -83,7 +84,7 @@
       (match-define (cons (cons pres-type callback) todo) accepting-stack)
       (queue-callback
        (lambda ()
-         (callback (presentation-value pres))))
+         (callback (textual-presentation-value pres))))
       (set! accepting-stack todo))
 
     (define presenters (weak-seteq))
@@ -96,7 +97,7 @@
       (for ([presenter (in-set presenters)])
         (send presenter highlight
               (presentation-presentation-type p)
-              (presentation-value p))))
+              (textual-presentation-value p))))
 
     (define/public (nothing-active)
       (for ([p (in-set presenters)])
