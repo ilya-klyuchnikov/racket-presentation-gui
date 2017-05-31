@@ -10,7 +10,8 @@
          presentation?
          presented-object-equal?
          current-presentation-context
-         value/p)
+         value/p
+         (struct-out textual-presentation))
 
 ;;; A presentation type is an opaque object whose equality is eq?. But
 ;;; the name is saved for debugging purposes.
@@ -36,6 +37,11 @@
 
 (define (presentation-presentation-type pres)
   ((cadr (presentation-accessor pres)) pres))
+
+(struct textual-presentation (offset len value type)
+  #:property prop:presentation
+  (list (lambda (x) (textual-presentation-value x))
+        (lambda (x) (textual-presentation-type x))))
 
 (define presenter<%>
   (interface ()

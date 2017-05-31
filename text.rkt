@@ -10,11 +10,6 @@
          pstring-annotate
          presentation-text%)
 
-(struct textual-presentation (offset len value type)
-  #:property prop:presentation
-  (list (lambda (x) (textual-presentation-value x))
-        (lambda (x) (textual-presentation-type x))))
-
 (define presentation-string<%>
   (interface ()
     get-string
