@@ -138,9 +138,7 @@
     (define/public (highlight type value)
       (set! active-presentations
             (for/seteq ([p presented-objects]
-                        #:when (presented-object-equal? type
-                                                        (presentation-value p)
-                                                        value))
+                        #:when (eq? (textual-presentation-value p) value))
               p))
       (send this invalidate-bitmap-cache))
 
@@ -165,8 +163,7 @@
           'presenter
           (let ([candidates
                  (for/list ([p presented-objects]
-                            #:when (and (or (not accepting)
-                                            (presentation-has-type? p accepting))
+                            #:when (and (or (not accepting))
                                         (>= pos (textual-presentation-offset p))
                                         (< pos (+ (textual-presentation-offset p)
                                                   (textual-presentation-len p)))))
@@ -187,12 +184,12 @@
       (cond [(or (send ev moving?) (send ev entering?))
              (let ([pres (presentation-at x y)])
                (match pres
-                 [(? presentation?)
+                 [(? textual-presentation?)
                   (send presentation-context make-active pres)]
                  ['nothing
                   (send presentation-context nothing-active)]
                  ['presenter (void)]))]
             [(and (send presentation-context currently-accepting) (send ev button-down?))
              (let ([pres (presentation-at x y)])
-               (when (presentation? pres)
+               (when (textual-presentation? pres)
                  (send presentation-context accepted pres)))]))))

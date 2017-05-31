@@ -4,11 +4,6 @@
 (require racket/class racket/match racket/set)
 
 (provide presenter<%>
-         presentation-has-type?
-         presentation-value
-         prop:presentation
-         presentation?
-         presented-object-equal?
          current-presentation-context
          value/p
          (struct-out textual-presentation))
@@ -17,32 +12,7 @@
 ;;; the name is saved for debugging purposes.
 (struct presentation-type (name))
 
-;;; prop:presentation should be set to a two-element list in which the
-;;; first element is the projection to get the presented object and
-;;; the second is the projection to get the presentation type.
-(define-values (prop:presentation presentation? presentation-accessor)
-  (make-struct-type-property 'prop:presentation))
-
-(struct textual-presentation (offset len value type)
-  #:property prop:presentation
-  (list (lambda (x) (textual-presentation-value x))
-        (lambda (x) (textual-presentation-type x))))
-
-
-(define (presented-object-equal? type v1 v2)
-  (eq? v1 v2))
-
-(define (value-acceptable? v pres)
-  (eq? v v))
-
-(define (presentation-has-type? presentation type)
-  (eq? (textual-presentation-type presentation) type))
-
-(define (presentation-value pres)
-  (textual-presentation-value pres))
-
-(define (presentation-presentation-type pres)
-  ((cadr (presentation-accessor pres)) pres))
+(struct textual-presentation (offset len value type))
 
 (define presenter<%>
   (interface ()
@@ -96,7 +66,7 @@
     (define/public (make-active p)
       (for ([presenter (in-set presenters)])
         (send presenter highlight
-              (presentation-presentation-type p)
+              (textual-presentation-type p)
               (textual-presentation-value p))))
 
     (define/public (nothing-active)
