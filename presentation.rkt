@@ -1,30 +1,20 @@
 #lang racket/base
 
 (require racket/gui/base)
-(require racket/class racket/contract racket/match racket/set)
-(require (for-syntax racket/base syntax/parse))
+(require racket/class racket/match racket/set)
 
 (provide presenter<%>
-         presentation-type?
-         make-presentation-type
-         presentation-type/c
          presentation-has-type?
-         presentation-presentation-type presentation-value
-         prop:presentation presentation?
+         presentation-value
+         prop:presentation
+         presentation?
          presented-object-equal?
-         presentation-context<%> presentation-context%
-         (contract-out [current-presentation-context
-                        (parameter/c (is-a?/c presentation-context<%>))])
+         current-presentation-context
          value/p)
 
 ;;; A presentation type is an opaque object whose equality is eq?. But
 ;;; the name is saved for debugging purposes.
 (struct presentation-type (name))
-
-; TODO - we can inline it?
-(define
-  (make-presentation-type name)
-  (presentation-type name))
 
 (define (presented-object-equal? type v1 v2)
   (eq? v1 v2))
@@ -34,11 +24,6 @@
 
 (define (presentation-has-type? presentation type)
   (eq? (presentation-presentation-type presentation) type))
-
-(define (presentation-type/c pres-type)
-  (make-flat-contract
-   #:name `(presentation-type/c , pres-type)
-   #:first-order (lambda (x) (value-acceptable? x pres-type))))
 
 ;;; prop:presentation should be set to a two-element list in which the
 ;;; first element is the projection to get the presented object and
@@ -65,33 +50,18 @@
 (define presenter<%>
   (interface ()
     ;; Equivalent presentations should be shown in a highlighted state.
-    [highlight (->i ([me any/c]
-                     [p-t presentation-type?]
-                     [value (p-t) (presentation-type/c p-t)])
-                    ()
-                    [result void?])]
+    highlight
     ;; No more highlighting.
-    [no-highlighting (->m void?)]))
+    no-highlighting))
 
 (define presentation-context<%>
   (interface ()
-    [register-presenter (->m (is-a?/c presenter<%>) void?)]
-    [currently-accepting (->m (or/c #f presentation-type?))]
-    [accept (->i ([me any/c]
-                  [p-t presentation-type?]
-                  [callback (p-t) (-> (presentation-type/c p-t) any/c)])
-                 ()
-                 [result void?])]
-    [accepted (->i ([me any/c]
-                    [pres (me) (let ([accepting-now (send me currently-accepting)])
-                                 (and/c presentation?
-                                        (lambda (pres)
-                                          (eq? (presentation-presentation-type pres)
-                                               accepting-now))))])
-                   ()
-                   [result any/c])]
-    [make-active (->m presentation? void?)]
-    [nothing-active (->m void?)]))
+    register-presenter
+    currently-accepting
+    accept
+    accepted
+    make-active
+    nothing-active))
 
 ;;; A presentation context manages the global application presentation
 ;;; state, including:
@@ -103,6 +73,7 @@
 (define presentation-context%
   (class* object% (presentation-context<%>)
     (super-new)
+    ; a list of pairs
     (define accepting-stack null)
     (define/public (currently-accepting)
       (if (pair? accepting-stack)
@@ -138,4 +109,4 @@
 (define current-presentation-context
   (make-parameter (new presentation-context%)))
 
-(define value/p (make-presentation-type 'value/p))
+(define value/p (presentation-type 'value/p))

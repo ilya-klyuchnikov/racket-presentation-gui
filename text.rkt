@@ -5,17 +5,10 @@
 (require "presentation.rkt")
 
 (provide presentation-string<%>
-         (contract-out
-          [pstring (-> string? (is-a?/c presentation-string<%>))]
-          [pstring-append
-           (->* () #:rest (listof (is-a?/c presentation-string<%>))
-                (is-a?/c presentation-string<%>))]
-          [pstring-annotate
-           (->i ([value (type) (presentation-type/c type)]
-                 [type presentation-type?]
-                 [str (is-a?/c presentation-string<%>)])
-                ()
-                [result (is-a?/c presentation-string<%>)])])
+         pstring
+         pstring-append
+         pstring-annotate
+         presentation-text%         
          presentation-text%)
 
 (struct textual-presentation (offset len value type)
